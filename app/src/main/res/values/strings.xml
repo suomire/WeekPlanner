@@ -1,0 +1,12 @@
+<resources>
+    <string name="app_name">WeekPlanner</string>
+    <string name="todo_page">todo</string>
+    <string name="mo">Mon</string>
+    <string name="tu">Tue</string>
+    <string name="we">Wen</string>
+    <string name="th">Thu</string>
+    <string name="fr">Fri</string>
+    <string name="sa">Sat</string>
+    <string name="su">Sun</string>
+    <string name="todo_page_title">Daily Plan</string>
+</resources>
