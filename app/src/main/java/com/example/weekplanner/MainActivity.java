@@ -37,9 +37,6 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
-
-
         mHelper = new TaskDbHelper(this);
         mTaskListView = findViewById(R.id.list_todo);
 
