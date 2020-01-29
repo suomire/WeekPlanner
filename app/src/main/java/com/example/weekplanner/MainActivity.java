@@ -1,10 +1,5 @@
 package com.example.weekplanner;
 
-import androidx.annotation.NonNull;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.viewpager.widget.ViewPager;
-
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
@@ -18,6 +13,10 @@ import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
+
+import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.weekplanner.db.TaskContract;
 import com.example.weekplanner.db.TaskDbHelper;
