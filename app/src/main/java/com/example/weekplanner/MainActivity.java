@@ -3,6 +3,7 @@ package com.example.weekplanner;
 import android.content.ContentValues;
 import android.content.DialogInterface;
 import android.database.Cursor;
+import android.database.DatabaseUtils;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.util.Log;
@@ -18,8 +19,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.weekplanner.db.TaskContract;
-import com.example.weekplanner.db.TaskDbHelper;
+import com.example.weekplanner.db.*;
+import com.google.android.material.tabs.TabLayout;
+
 
 import java.util.ArrayList;
 
@@ -31,14 +33,39 @@ public class MainActivity extends AppCompatActivity {
     private ListView mTaskListView;
     private ArrayAdapter<String> mAdapter;
 
+    private TabLayout tabLayout;
+    private String[] weekDays = new String[]{"MON", "TUE", "WEN", "THU", "FRI", "SAT", "SUN"};
+    private int position;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        tabLayout = findViewById(R.id.tablelayout);
+
+        tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+            @Override
+            public void onTabSelected(TabLayout.Tab tab) {
+                updateUI();
+                position = tab.getPosition();
+                Log.i(TAG, "hey = " + position);
+            }
+
+            @Override
+            public void onTabUnselected(TabLayout.Tab tab) {
+
+            }
+
+            @Override
+            public void onTabReselected(TabLayout.Tab tab) {
+
+            }
+        });
 
 
         mHelper = new TaskDbHelper(this);
         mTaskListView = findViewById(R.id.list_todo);
+
 
         updateUI();
     }
@@ -52,22 +79,22 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         switch (item.getItemId()) {
+
             case R.id.action_add_task:
                 Log.i(TAG, "AddNewTask");
                 final EditText addNewTask = new EditText(this);
                 AlertDialog dialog = new AlertDialog.Builder(this)
                         .setTitle("Add a new task")
-                        .setMessage("Describe your task")
+                        .setMessage("What do you want to do next?")
                         .setView(addNewTask)
                         .setPositiveButton("Add", new DialogInterface.OnClickListener() {
                             @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
+                            public void onClick(DialogInterface dialog, int which) {
                                 String task = String.valueOf(addNewTask.getText());
-                                Log.i(TAG, "Task to add: " + task);
-
                                 SQLiteDatabase db = mHelper.getWritableDatabase();
                                 ContentValues values = new ContentValues();
-                                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);//DAY OF WEEK???
+                                values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                                values.put(TaskContract.TaskEntry.DOW, weekDays[position]);
                                 db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
                                         null,
                                         values,
@@ -90,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<String> taskList = new ArrayList<>();
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE},
+                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.DOW},
                 null, null, null, null, null);
         while (cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
@@ -115,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
-        TextView taskTextView = parent.findViewById(R.id.task_title);
+        TextView taskTextView = (TextView) parent.findViewById(R.id.task_title);
         String task = String.valueOf(taskTextView.getText());
         SQLiteDatabase db = mHelper.getWritableDatabase();
         db.delete(TaskContract.TaskEntry.TABLE,
