@@ -49,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 updateUI();
                 position = tab.getPosition();
                 Log.i(TAG, "hey = " + position);
+                updateUI();
             }
 
             @Override
@@ -115,10 +116,11 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI() {
         ArrayList<String> taskList = new ArrayList<>();
+        String[] selectionArgs = new String[]{weekDays[position]};
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
                 new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.DOW},
-                null, null, null, null, null);
+                "dow = ? ", selectionArgs, null, null, null);
         while (cursor.moveToNext()) {
             int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
             taskList.add(cursor.getString(idx));
