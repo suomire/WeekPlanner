@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -21,6 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.weekplanner.db.Task;
 import com.example.weekplanner.db.TaskContract;
 import com.example.weekplanner.db.TaskDbHelper;
 import com.google.android.material.tabs.TabLayout;
@@ -34,7 +34,7 @@ public class MainActivity extends AppCompatActivity {
     private TaskDbHelper mHelper;
 
     private ListView mTaskListView;
-    private ArrayAdapter<String> mAdapter;
+    private TaskListAdapter mAdapter;
 
     private TabLayout tabLayout;
     private String[] weekDays = new String[]{"MON", "TUE", "WEN", "THU", "FRI", "SAT", "SUN"};
@@ -96,32 +96,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void addTask() {
-        /*final EditText addNewTask = new EditText(this);
-        final Button setTime = new Button(this);
-        AlertDialog dialog = new AlertDialog.Builder(this)
-                .setTitle("Add a new task")
-                .setMessage("What do you want to do next?")
-                .setView(addNewTask)
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String task = String.valueOf(addNewTask.getText());
-                        SQLiteDatabase db = mHelper.getWritableDatabase();
-                        ContentValues values = new ContentValues();
-                        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                        values.put(TaskContract.TaskEntry.DOW, weekDays[position]);
-                        db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                                null,
-                                values,
-                                SQLiteDatabase.CONFLICT_REPLACE);
-                        db.close();
-                        updateUI();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .create();
-        dialog.show();*/
-
         AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
         final View mView = getLayoutInflater().inflate(R.layout.dialog_item, null);
         final EditText addNewTask = mView.findViewById(R.id.task_name);
@@ -177,21 +151,23 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUI() {
-        ArrayList<String> taskList = new ArrayList<>();
+        ArrayList<Task> taskList = new ArrayList<>();
+        ArrayList<String> timeList = new ArrayList<>();
         String[] selectionArgs = new String[]{weekDays[position]};
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
-                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.DOW},
+                new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.DOW, TaskContract.TaskEntry.TIME},
                 "dow = ? ", selectionArgs, null, null, null);
         while (cursor.moveToNext()) {
-            int idx = cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE);
-            taskList.add(cursor.getString(idx));
+            Task task = new Task(cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.TIME)),
+                    cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)));
+            taskList.add(task);
+
         }
 
         if (mAdapter == null) {
-            mAdapter = new ArrayAdapter<>(this,
+            mAdapter = new TaskListAdapter(this,
                     R.layout.item_todo,
-                    R.id.task_title,
                     taskList);
             mTaskListView.setAdapter(mAdapter);
         } else {

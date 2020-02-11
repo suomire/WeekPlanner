@@ -12,4 +12,6 @@
     <string name="question">What do you want to do next?</string>
     <string name="set_time">set time</string>
     <string name="time">Time</string>
+    <string name="hello">Hello</string>
+    <string name="done">Done</string>
 </resources>
