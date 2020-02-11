@@ -9,4 +9,7 @@
     <string name="sa">Sat</string>
     <string name="su">Sun</string>
     <string name="todo_page_title">Daily Plan</string>
+    <string name="question">What do you want to do next?</string>
+    <string name="set_time">set time</string>
+    <string name="time">Time</string>
 </resources>
