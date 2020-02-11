@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity {
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
                 new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.DOW, TaskContract.TaskEntry.TIME},
-                "dow = ? ", selectionArgs, null, null, null);
+                "dow = ? ", selectionArgs, null, null, TaskContract.TaskEntry.TIME);
         while (cursor.moveToNext()) {
             Task task = new Task(cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.TIME)),
                     cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)));
