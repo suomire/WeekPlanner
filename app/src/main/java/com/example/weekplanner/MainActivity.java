@@ -28,14 +28,15 @@ import java.util.Calendar;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = "MainActivity";
-    private TaskDbHelper mHelper;
 
+    private static final String TAG = "MainActivity";
+    //database vars
+    private TaskDbHelper mHelper;
     private ListView mTaskListView;
     private TaskListAdapter mAdapter;
-
     private String[] weekDays = new String[]{"MON", "TUE", "WEN", "THU", "FRI", "SAT", "SUN"};
     private int position;
+
     private EditText txtTime;
 
     private mThread mThread;
@@ -96,22 +97,15 @@ public class MainActivity extends AppCompatActivity {
         ArrayList<Task> taskList = new ArrayList<>();
         String[] selectionArgs = new String[]{weekDays[position]};
         SQLiteDatabase db = mHelper.getReadableDatabase();
+
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
                 new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.DOW, TaskContract.TaskEntry.TIME},
                 "dow = ? ", selectionArgs, null, null, TaskContract.TaskEntry.TIME);
         while (cursor.moveToNext()) {
-            int mHour, mMinute, mSeconds;
+            int mSeconds;
             mSeconds = cursor.getInt(cursor.getColumnIndex(TaskContract.TaskEntry.TIME));
-            mHour = mSeconds / 60;
-            mMinute = mSeconds - mHour * 60;
-            String str;
-            if (mMinute < 10) {
-                str = mHour + ":0" + mMinute;
-            } else {
-                str = mHour + ":" + mMinute;
-            }
 
-            Task task = new Task(str,
+            Task task = new Task(timePrinting(mSeconds / 60, mSeconds - (mSeconds / 60) * 60),
                     cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)));
             taskList.add(task);
 
@@ -174,15 +168,9 @@ public class MainActivity extends AppCompatActivity {
                                 public void onTimeSet(TimePicker view, int hourOfDay,
                                                       int minute) {
                                     txtTime = mView.findViewById(R.id.textTime);
-                                    String str;
-                                    if (minute < 10) {
-                                        str = hourOfDay + ":0" + minute;
-                                    } else {
-                                        str = hourOfDay + ":" + minute;
-                                    }
                                     dbHour[0] = hourOfDay;
                                     dbMin[0] = minute;
-                                    txtTime.setText(str);
+                                    txtTime.setText(timePrinting(hourOfDay, minute));
                                 }
                             }, mHour, mMinute, false);
 
@@ -214,6 +202,16 @@ public class MainActivity extends AppCompatActivity {
 
 
         }
+    }
+
+    public String timePrinting(int hour, int min) {
+        String str;
+        if (min < 10) {
+            str = hour + ":0" + min;
+        } else {
+            str = hour + ":" + min;
+        }
+        return str;
     }
 
 
