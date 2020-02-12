@@ -100,7 +100,18 @@ public class MainActivity extends AppCompatActivity {
                 new String[]{TaskContract.TaskEntry._ID, TaskContract.TaskEntry.COL_TASK_TITLE, TaskContract.TaskEntry.DOW, TaskContract.TaskEntry.TIME},
                 "dow = ? ", selectionArgs, null, null, TaskContract.TaskEntry.TIME);
         while (cursor.moveToNext()) {
-            Task task = new Task(cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.TIME)),
+            int mHour, mMinute, mSeconds;
+            mSeconds = cursor.getInt(cursor.getColumnIndex(TaskContract.TaskEntry.TIME));
+            mHour = mSeconds / 60;
+            mMinute = mSeconds - mHour * 60;
+            String str;
+            if (mMinute < 10) {
+                str = mHour + ":0" + mMinute;
+            } else {
+                str = mHour + ":" + mMinute;
+            }
+
+            Task task = new Task(str,
                     cursor.getString(cursor.getColumnIndex(TaskContract.TaskEntry.COL_TASK_TITLE)));
             taskList.add(task);
 
@@ -143,7 +154,9 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
             final View mView = getLayoutInflater().inflate(R.layout.dialog_item, null);
             final EditText addNewTask = mView.findViewById(R.id.task_name);
-            //EditText settedTime = mView.findViewById(R.id.textTime);
+            final Integer[] dbHour = new Integer[1];
+            final Integer[] dbMin = new Integer[1];
+
             Button setTime = mView.findViewById(R.id.set_time_btn);
             setTime.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -161,10 +174,18 @@ public class MainActivity extends AppCompatActivity {
                                 public void onTimeSet(TimePicker view, int hourOfDay,
                                                       int minute) {
                                     txtTime = mView.findViewById(R.id.textTime);
-                                    String str = hourOfDay + ":" + minute;
+                                    String str;
+                                    if (minute < 10) {
+                                        str = hourOfDay + ":0" + minute;
+                                    } else {
+                                        str = hourOfDay + ":" + minute;
+                                    }
+                                    dbHour[0] = hourOfDay;
+                                    dbMin[0] = minute;
                                     txtTime.setText(str);
                                 }
                             }, mHour, mMinute, false);
+
                     timePickerDialog.show();
                 }
             });
@@ -177,7 +198,7 @@ public class MainActivity extends AppCompatActivity {
                             ContentValues values = new ContentValues();
                             values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
                             values.put(TaskContract.TaskEntry.DOW, weekDays[position]);
-                            values.put(TaskContract.TaskEntry.TIME, String.valueOf(txtTime.getText()));
+                            values.put(TaskContract.TaskEntry.TIME, dbHour[0] * 60 + dbMin[0]);
 
                             db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
                                     null,
@@ -195,5 +216,5 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // todo sort time in db, store time in milliseconds--???
+
 }

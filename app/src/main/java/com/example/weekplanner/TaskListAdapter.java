@@ -10,8 +10,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 
-import com.example.weekplanner.db.Task;
-
 import java.util.ArrayList;
 
 public class TaskListAdapter extends ArrayAdapter<Task> {

@@ -1,4 +1,4 @@
-package com.example.weekplanner.db;
+package com.example.weekplanner;
 
 public class Task {
     private String timeForTask;
