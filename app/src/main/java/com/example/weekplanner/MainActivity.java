@@ -41,11 +41,14 @@ public class MainActivity extends AppCompatActivity {
     private int position;
     private EditText txtTime;
 
+    private mThread mThread;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         tabLayout = findViewById(R.id.tablelayout);
+        mThread = new mThread();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
@@ -87,67 +90,12 @@ public class MainActivity extends AppCompatActivity {
 
             case R.id.action_add_task:
                 Log.i(TAG, "AddNewTask");
-                addTask();
+                mThread.run();
                 return true;
 
             default:
                 return super.onOptionsItemSelected(item);
         }
-    }
-
-    private void addTask() {
-        AlertDialog.Builder mBuilder = new AlertDialog.Builder(this);
-        final View mView = getLayoutInflater().inflate(R.layout.dialog_item, null);
-        final EditText addNewTask = mView.findViewById(R.id.task_name);
-        EditText settedTime = mView.findViewById(R.id.textTime);
-        Button setTime = mView.findViewById(R.id.set_time_btn);
-        setTime.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-                final Calendar c = Calendar.getInstance();
-                int mHour = c.get(Calendar.HOUR_OF_DAY);
-                int mMinute = c.get(Calendar.MINUTE);
-
-                // Launch Time Picker Dialog
-                TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this,
-                        new TimePickerDialog.OnTimeSetListener() {
-
-                            @Override
-                            public void onTimeSet(TimePicker view, int hourOfDay,
-                                                  int minute) {
-                                txtTime = mView.findViewById(R.id.textTime);
-                                String str = hourOfDay + ":" + minute;
-                                txtTime.setText(str);
-                            }
-                        }, mHour, mMinute, false);
-                timePickerDialog.show();
-            }
-        });
-        mBuilder.setView(mView)
-                .setPositiveButton("Add", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        String task = String.valueOf(addNewTask.getText());
-                        SQLiteDatabase db = mHelper.getWritableDatabase();
-                        ContentValues values = new ContentValues();
-                        values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
-                        values.put(TaskContract.TaskEntry.DOW, weekDays[position]);
-                        values.put(TaskContract.TaskEntry.TIME, String.valueOf(txtTime.getText()));
-
-                        db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
-                                null,
-                                values,
-                                SQLiteDatabase.CONFLICT_REPLACE);
-                        db.close();
-                        updateUI();
-                    }
-                })
-                .setNegativeButton("Cancel", null)
-                .create();
-        mBuilder.show();
-
-
     }
 
     private void updateUI() {
@@ -193,4 +141,65 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //TODO make async tasks!!
+
+    public class mThread extends Thread {
+        public void run() {
+            addTask();
+        }
+
+        private void addTask() {
+            AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
+            final View mView = getLayoutInflater().inflate(R.layout.dialog_item, null);
+            final EditText addNewTask = mView.findViewById(R.id.task_name);
+            EditText settedTime = mView.findViewById(R.id.textTime);
+            Button setTime = mView.findViewById(R.id.set_time_btn);
+            setTime.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    final Calendar c = Calendar.getInstance();
+                    int mHour = c.get(Calendar.HOUR_OF_DAY);
+                    int mMinute = c.get(Calendar.MINUTE);
+
+                    // Launch Time Picker Dialog
+                    TimePickerDialog timePickerDialog = new TimePickerDialog(MainActivity.this,
+                            new TimePickerDialog.OnTimeSetListener() {
+
+                                @Override
+                                public void onTimeSet(TimePicker view, int hourOfDay,
+                                                      int minute) {
+                                    txtTime = mView.findViewById(R.id.textTime);
+                                    String str = hourOfDay + ":" + minute;
+                                    txtTime.setText(str);
+                                }
+                            }, mHour, mMinute, false);
+                    timePickerDialog.show();
+                }
+            });
+            mBuilder.setView(mView)
+                    .setPositiveButton("Add", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            String task = String.valueOf(addNewTask.getText());
+                            SQLiteDatabase db = mHelper.getWritableDatabase();
+                            ContentValues values = new ContentValues();
+                            values.put(TaskContract.TaskEntry.COL_TASK_TITLE, task);
+                            values.put(TaskContract.TaskEntry.DOW, weekDays[position]);
+                            values.put(TaskContract.TaskEntry.TIME, String.valueOf(txtTime.getText()));
+
+                            db.insertWithOnConflict(TaskContract.TaskEntry.TABLE,
+                                    null,
+                                    values,
+                                    SQLiteDatabase.CONFLICT_REPLACE);
+                            db.close();
+                            updateUI();
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .create();
+            mBuilder.show();
+
+
+        }
+    }
 }
