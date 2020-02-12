@@ -10,6 +10,9 @@
         android:layout_gravity="left"
         android:layout_weight="2"
         android:clickable="false"
+        android:cursorVisible="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
         android:inputType="time" />
 
     <TextView
