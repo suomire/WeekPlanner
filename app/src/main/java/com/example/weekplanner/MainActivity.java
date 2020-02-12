@@ -1,5 +1,6 @@
 package com.example.weekplanner;
 
+import android.annotation.SuppressLint;
 import android.app.TimePickerDialog;
 import android.content.ContentValues;
 import android.content.DialogInterface;
@@ -30,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private static final String TAG = "MainActivity";
+
     //database vars
     private TaskDbHelper mHelper;
     private ListView mTaskListView;
@@ -81,8 +83,8 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        //can be useful in case of modification with adding new menu items
         switch (item.getItemId()) {
-
             case R.id.action_add_task:
                 Log.i(TAG, "AddNewTask");
                 mThread.run();
@@ -112,9 +114,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         if (mAdapter == null) {
-            mAdapter = new TaskListAdapter(this,
-                    R.layout.item_todo,
-                    taskList);
+            mAdapter = new TaskListAdapter(this, R.layout.item_todo, taskList);
             mTaskListView.setAdapter(mAdapter);
         } else {
             mAdapter.clear();
@@ -146,7 +146,7 @@ public class MainActivity extends AppCompatActivity {
 
         private void addTask() {
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
-            final View mView = getLayoutInflater().inflate(R.layout.dialog_item, null);
+            @SuppressLint("InflateParams") final View mView = getLayoutInflater().inflate(R.layout.dialog_item, null);
             final EditText addNewTask = mView.findViewById(R.id.task_name);
             final Integer[] dbHour = new Integer[1];
             final Integer[] dbMin = new Integer[1];
@@ -213,6 +213,5 @@ public class MainActivity extends AppCompatActivity {
         }
         return str;
     }
-
 
 }

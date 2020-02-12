@@ -1,19 +1,19 @@
 package com.example.weekplanner;
 
-public class Task {
+class Task {
     private String timeForTask;
     private String taskName;
 
-    public Task(String  mTime, String mName) {
+    Task(String mTime, String mName) {
         timeForTask = mTime;
         taskName = mName;
     }
 
-    public String getTimeForTask() {
+    String getTimeForTask() {
         return timeForTask;
     }
 
-    public String getTaskName() {
+    String getTaskName() {
         return taskName;
     }
 }

@@ -18,14 +18,15 @@ public class TaskListAdapter extends ArrayAdapter<Task> {
     private ArrayList<Task> tasks;
     private int mViewResId;
 
-    public TaskListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Task> objects) {
+    TaskListAdapter(@NonNull Context context, int resource, @NonNull ArrayList<Task> objects) {
         super(context, resource, objects);
         this.tasks = objects;
         this.mViewResId = resource;
         layoutInflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
-    public View getView(int position, View convertView, ViewGroup parent) {
+    @NonNull
+    public View getView(int position, View convertView, @NonNull ViewGroup parent) {
         convertView = layoutInflater.inflate(mViewResId, null);
 
         Task user = tasks.get(position);

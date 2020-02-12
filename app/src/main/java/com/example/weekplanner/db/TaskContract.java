@@ -3,8 +3,8 @@ package com.example.weekplanner.db;
 import android.provider.BaseColumns;
 
 public class TaskContract {
-    public static final String DB_NAME = "com.example.weekplanner.db";
-    public static final int DB_VERSION = 1;
+    static final String DB_NAME = "com.example.weekplanner.db";
+    static final int DB_VERSION = 1;
 
     public class TaskEntry implements BaseColumns {
         public static final String TABLE = "tasks";
