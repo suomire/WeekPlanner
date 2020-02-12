@@ -20,9 +20,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.weekplanner.db.Task;
-import com.example.weekplanner.db.TaskContract;
-import com.example.weekplanner.db.TaskDbHelper;
+import com.example.weekplanner.db.*;
 import com.google.android.material.tabs.TabLayout;
 
 import java.util.ArrayList;
@@ -36,7 +34,6 @@ public class MainActivity extends AppCompatActivity {
     private ListView mTaskListView;
     private TaskListAdapter mAdapter;
 
-    private TabLayout tabLayout;
     private String[] weekDays = new String[]{"MON", "TUE", "WEN", "THU", "FRI", "SAT", "SUN"};
     private int position;
     private EditText txtTime;
@@ -47,13 +44,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        tabLayout = findViewById(R.id.tablelayout);
+        TabLayout tabLayout = findViewById(R.id.tablelayout);
         mThread = new mThread();
 
         tabLayout.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-                updateUI();
                 position = tab.getPosition();
                 Log.i(TAG, "hey = " + position);
                 updateUI();
@@ -70,10 +66,8 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
         mHelper = new TaskDbHelper(this);
         mTaskListView = findViewById(R.id.list_todo);
-
 
         updateUI();
     }
@@ -100,7 +94,6 @@ public class MainActivity extends AppCompatActivity {
 
     private void updateUI() {
         ArrayList<Task> taskList = new ArrayList<>();
-        ArrayList<String> timeList = new ArrayList<>();
         String[] selectionArgs = new String[]{weekDays[position]};
         SQLiteDatabase db = mHelper.getReadableDatabase();
         Cursor cursor = db.query(TaskContract.TaskEntry.TABLE,
@@ -130,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
 
     public void deleteTask(View view) {
         View parent = (View) view.getParent();
-        TextView taskTextView = (TextView) parent.findViewById(R.id.task_title);
+        TextView taskTextView = parent.findViewById(R.id.task_title);
         String task = String.valueOf(taskTextView.getText());
         SQLiteDatabase db = mHelper.getWritableDatabase();
         db.delete(TaskContract.TaskEntry.TABLE,
@@ -140,7 +133,6 @@ public class MainActivity extends AppCompatActivity {
         updateUI();
     }
 
-    //TODO make async tasks!!
 
     public class mThread extends Thread {
         public void run() {
@@ -151,7 +143,7 @@ public class MainActivity extends AppCompatActivity {
             AlertDialog.Builder mBuilder = new AlertDialog.Builder(MainActivity.this);
             final View mView = getLayoutInflater().inflate(R.layout.dialog_item, null);
             final EditText addNewTask = mView.findViewById(R.id.task_name);
-            EditText settedTime = mView.findViewById(R.id.textTime);
+            //EditText settedTime = mView.findViewById(R.id.textTime);
             Button setTime = mView.findViewById(R.id.set_time_btn);
             setTime.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -202,4 +194,6 @@ public class MainActivity extends AppCompatActivity {
 
         }
     }
+
+    // todo sort time in db, store time in milliseconds--???
 }
